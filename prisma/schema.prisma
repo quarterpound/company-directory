@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model company {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  company               String
+  city                  city                    @relation(fields: [city_id], references: [id])
+  speciality_on_company speciality_on_company[]
+  services_on_company   services_on_company[]
+  industry_on_company   industry_on_company[]
+  city_id               Int
+}
+
+model city {
+  id      Int       @id @default(autoincrement())
+  name    String
+  slug    String    @unique
+  company company[]
+}
+
+model speciality {
+  id                    Int                     @id
+  label                 String
+  slug                  String                  @unique
+  speciality_on_company speciality_on_company[]
+}
+
+model service {
+  id                  Int                   @id
+  label               String
+  slug                String                @unique
+  services_on_company services_on_company[]
+}
+
+model industry {
+  id                  Int                   @id
+  label               String
+  slug                String                @unique
+  industry_on_company industry_on_company[]
+}
+
+model speciality_on_company {
+  company_id    Int
+  company       company    @relation(fields: [company_id], references: [id])
+  speciality    speciality @relation(fields: [speciality_id], references: [id])
+  speciality_id Int
+
+  @@id([speciality_id, company_id])
+}
+
+model services_on_company {
+  service    service @relation(fields: [service_id], references: [id])
+  service_id Int
+  company    company @relation(fields: [company_id], references: [id])
+  company_id Int
+
+  @@id([service_id, company_id])
+}
+
+model industry_on_company {
+  industry    industry @relation(fields: [industry_id], references: [id])
+  industry_id Int
+  company     company  @relation(fields: [company_id], references: [id])
+  company_id  Int
+
+  @@id([industry_id, company_id])
+}
