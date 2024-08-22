@@ -46,6 +46,7 @@ const Filters = ({
       industry: [],
       services: [],
       city: [],
+      page: 0,
     },
     resolver: zodResolver(searchValidation),
   });

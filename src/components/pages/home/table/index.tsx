@@ -15,6 +15,8 @@ import Link from "next/link";
 import { SearchValidation } from "../validation";
 import { getCompanyTable } from "./actions";
 import { useAppState } from "@/lib/state";
+import Pagination from "./pagination";
+import { useState } from "react";
 
 type CompanyFull = Prisma.companyGetPayload<{
   include: {
@@ -34,11 +36,19 @@ interface TableProps {
 }
 
 const Table = ({ initialCompanies, initialCount, filters }: TableProps) => {
-  const internalFilters = useAppState((state) => state.filters);
+  const { filters: internalFilters, setFilters } = useAppState();
 
   const query = useQuery({
-    queryKey: ["companies", internalFilters ?? filters],
-    queryFn: () => getCompanyTable(internalFilters ?? filters),
+    queryKey: [
+      "companies",
+      internalFilters ?? filters,
+      (internalFilters ?? filters).page,
+    ],
+    queryFn: () =>
+      getCompanyTable({
+        ...(internalFilters ?? filters),
+        page: (internalFilters ?? filters).page,
+      }),
     initialData: () => {
       if (internalFilters) {
         return undefined;
@@ -81,6 +91,16 @@ const Table = ({ initialCompanies, initialCount, filters }: TableProps) => {
           </CardFooter>
         </Card>
       ))}
+      {query.data?.count !== 0 && (
+        <Pagination
+          total={query.data?.count ?? 0}
+          limit={10}
+          page={(internalFilters ?? filters).page ?? 0}
+          onChange={(page) =>
+            setFilters({ ...(internalFilters ?? filters), page })
+          }
+        />
+      )}
     </div>
   );
 };
