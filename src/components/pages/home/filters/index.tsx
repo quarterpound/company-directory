@@ -33,7 +33,7 @@ interface FiltersProps {
   filters: SearchValidation;
 }
 
-function filterNonNull(obj: unknown) {
+function filterNonNull(obj: any) {
   return Object.fromEntries(Object.entries(obj).filter(([k, v]) => v));
 }
 

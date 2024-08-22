@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import FiltersServer from "./filters/server";
 import TableServer from "./table/server";
-import { searchValidation, SearchValidation } from "./validation";
+import { SearchValidation } from "./validation";
 
 interface HomePageProps {
   filters: SearchValidation;
