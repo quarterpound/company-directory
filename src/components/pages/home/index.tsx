@@ -28,7 +28,7 @@ const HomePage = async ({ filters }: HomePageProps) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-[250px_auto] items-start py-5 w-full gap-12 mx-auto max-w-[1100px]">
           <div className="md:sticky md:top-0">
-            <FiltersServer />
+            <FiltersServer filters={parsed.data} />
           </div>
           <div>
             <TableServer filters={parsed.data} />

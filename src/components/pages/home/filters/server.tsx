@@ -1,7 +1,12 @@
 import prisma from "@/lib/db";
 import Filters from ".";
+import { SearchValidation } from "../validation";
 
-const FiltersServer = async () => {
+interface FiltersServerProps {
+  filters: SearchValidation;
+}
+
+const FiltersServer = async ({ filters }: FiltersServerProps) => {
   const [cities, services, specialities, industries] =
     await prisma.$transaction([
       prisma.city.findMany(),
@@ -12,6 +17,7 @@ const FiltersServer = async () => {
 
   return (
     <Filters
+      filters={filters}
       city={cities}
       service={services}
       specialty={specialities}
