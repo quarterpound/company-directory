@@ -15,8 +15,8 @@ export const getCompanyTable = async (search: SearchValidation) => {
           },
         },
       },
-      take: search.limit,
-      skip: search.limit * search.page,
+      take: search.limit ?? 10,
+      skip: (search.limit ?? 10) * (search.page ?? 0),
     }),
   ]);
 
