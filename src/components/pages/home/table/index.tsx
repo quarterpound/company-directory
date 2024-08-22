@@ -1,15 +1,19 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Prisma } from "@prisma/client";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { SearchValidation } from "../validation";
+import { getCompanyTable } from "./actions";
 
 type CompanyFull = Prisma.companyGetPayload<{
   include: {
@@ -23,14 +27,25 @@ type CompanyFull = Prisma.companyGetPayload<{
 }>;
 
 interface TableProps {
-  companies: CompanyFull[];
-  count: number;
+  initialCompanies: CompanyFull[];
+  initialCount: number;
+  filters: SearchValidation;
 }
 
-const Table = ({ companies, count }: TableProps) => {
+const Table = ({ initialCompanies, initialCount, filters }: TableProps) => {
+  const query = useQuery({
+    queryKey: ["companies"],
+    placeholderData: keepPreviousData,
+    queryFn: () => getCompanyTable(filters),
+    initialData: {
+      count: initialCount,
+      data: initialCompanies,
+    },
+  });
+
   return (
     <div className="grid gap-5">
-      {companies.map((item) => (
+      {query.data.data.map((item) => (
         <Card className="shadow-xl" key={item.id}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">

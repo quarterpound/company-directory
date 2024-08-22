@@ -26,9 +26,16 @@ interface FiltersProps {
   specialty: speciality[];
   industry: industry[];
   service: service[];
+  filters: SearchValidation;
 }
 
-const Filters = ({ city, specialty, industry, service }: FiltersProps) => {
+const Filters = ({
+  city,
+  specialty,
+  industry,
+  service,
+  filters,
+}: FiltersProps) => {
   const form = useForm<SearchValidation>({
     values: {
       search: "",

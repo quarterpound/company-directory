@@ -1,22 +1,17 @@
-import prisma from "@/lib/db";
 import Table from ".";
+import { getCompanyTable } from "./actions";
+import { SearchValidation } from "../validation";
 
-const TableServer = async () => {
-  const [count, data] = await prisma.$transaction([
-    prisma.company.count(),
-    prisma.company.findMany({
-      include: {
-        city: true,
-        speciality_on_company: {
-          include: {
-            speciality: true,
-          },
-        },
-      },
-    }),
-  ]);
+interface TableServerProps {
+  filters: SearchValidation;
+}
 
-  return <Table companies={data} count={count} />;
+const TableServer = async ({ filters }: TableServerProps) => {
+  const { count, data } = await getCompanyTable(filters);
+
+  return (
+    <Table initialCompanies={data} initialCount={count} filters={filters} />
+  );
 };
 
 export default TableServer;
