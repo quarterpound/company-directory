@@ -14,6 +14,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { SearchValidation } from "../validation";
 import { getCompanyTable } from "./actions";
+import { useAppState } from "@/lib/state";
 
 type CompanyFull = Prisma.companyGetPayload<{
   include: {
@@ -33,19 +34,27 @@ interface TableProps {
 }
 
 const Table = ({ initialCompanies, initialCount, filters }: TableProps) => {
+  const internalFilters = useAppState((state) => state.filters);
+
   const query = useQuery({
-    queryKey: ["companies"],
-    placeholderData: keepPreviousData,
-    queryFn: () => getCompanyTable(filters),
-    initialData: {
-      count: initialCount,
-      data: initialCompanies,
+    queryKey: ["companies", internalFilters ?? filters],
+    queryFn: () => getCompanyTable(internalFilters ?? filters),
+    initialData: () => {
+      if (internalFilters) {
+        return undefined;
+      }
+
+      return {
+        count: initialCount,
+        data: initialCompanies,
+      };
     },
+    placeholderData: keepPreviousData,
   });
 
   return (
     <div className="grid gap-5">
-      {query.data.data.map((item) => (
+      {query.data?.data.map((item) => (
         <Card className="shadow-xl" key={item.id}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">

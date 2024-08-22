@@ -19,11 +19,10 @@ model company {
   slug                  String                  @unique
   city                  city                    @relation(fields: [city_id], references: [id])
   city_id               Int
-  claim                 claim?                  @relation(fields: [claim_id], references: [id])
-  claim_id              Int?
   speciality_on_company speciality_on_company[]
   services_on_company   services_on_company[]
   industry_on_company   industry_on_company[]
+  claim                 claim[]
   created_at            DateTime                @default(now())
 }
 
@@ -56,14 +55,15 @@ model industry {
 }
 
 model claim {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   first      String
   last       String
   email      String
   phone      String
   message    String
-  company    company[]
-  created_at DateTime  @default(now())
+  company    company  @relation(fields: [company_id], references: [id])
+  created_at DateTime @default(now())
+  company_id Int
 }
 
 model speciality_on_company {

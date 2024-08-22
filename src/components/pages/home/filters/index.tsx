@@ -18,8 +18,10 @@ import { city, industry, service, speciality } from "@prisma/client";
 import { isSea } from "node:sea";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { SearchValidation } from "../validation";
+import { searchValidation, SearchValidation } from "../validation";
 import { Checkbox } from "@/components/ui/checkbox";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAppState } from "@/lib/state";
 
 interface FiltersProps {
   city: city[];
@@ -36,6 +38,7 @@ const Filters = ({
   service,
   filters,
 }: FiltersProps) => {
+  const setFilters = useAppState((state) => state.setFilters);
   const form = useForm<SearchValidation>({
     values: {
       search: "",
@@ -44,19 +47,21 @@ const Filters = ({
       services: [],
       city: [],
     },
+    resolver: zodResolver(searchValidation),
   });
+
   const [open, setOpen] = useState<string[]>([]);
 
   return (
     <div className="grid gap-4">
       <p className="font-bold">Filter Companies</p>
       <Form {...form}>
-        <form className="grid gap-2">
-          <Input placeholder="Search..." />
+        <form onChange={form.handleSubmit(setFilters)} className="grid gap-2">
+          <Input placeholder="Search..." {...form.register("search")} />
           <div>
             <Accordion type="multiple" value={open} onValueChange={setOpen}>
               <AccordionItem value="cities">
-                <AccordionTrigger>Headquarters</AccordionTrigger>
+                <AccordionTrigger>{`Headquarters`}</AccordionTrigger>
                 <AccordionContent>
                   <div className="grid gap-1 max-h-[350px] overflow-y-auto">
                     {city.map((item) => (
