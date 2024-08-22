@@ -8,12 +8,6 @@ interface HomePageProps {
 }
 
 const HomePage = async ({ filters }: HomePageProps) => {
-  const parsed = searchValidation.safeParse(filters);
-
-  if (!parsed.success) {
-    notFound();
-  }
-
   return (
     <div className="py-12 md:py-24 container">
       <div className="grid gap-6 md:gap-24">
@@ -28,10 +22,10 @@ const HomePage = async ({ filters }: HomePageProps) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-[250px_auto] items-start py-5 w-full gap-12 mx-auto max-w-[1100px]">
           <div className="md:sticky md:top-0">
-            <FiltersServer filters={parsed.data} />
+            <FiltersServer filters={filters} />
           </div>
           <div>
-            <TableServer filters={parsed.data} />
+            <TableServer filters={filters} />
           </div>
         </div>
       </div>

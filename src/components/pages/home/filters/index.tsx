@@ -22,6 +22,8 @@ import { searchValidation, SearchValidation } from "../validation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppState } from "@/lib/state";
+import qs from "qs";
+import { useRouter } from "next/navigation";
 
 interface FiltersProps {
   city: city[];
@@ -29,6 +31,10 @@ interface FiltersProps {
   industry: industry[];
   service: service[];
   filters: SearchValidation;
+}
+
+function filterNonNull(obj: unknown) {
+  return Object.fromEntries(Object.entries(obj).filter(([k, v]) => v));
 }
 
 const Filters = ({
@@ -39,25 +45,38 @@ const Filters = ({
   filters,
 }: FiltersProps) => {
   const setFilters = useAppState((state) => state.setFilters);
+
   const form = useForm<SearchValidation>({
     values: {
-      search: "",
-      specialities: [],
-      industry: [],
-      services: [],
-      city: [],
-      page: 0,
+      search: filters.search ?? "",
+      specialities: filters.specialities ?? [],
+      industry: filters.industry ?? [],
+      services: filters.services ?? [],
+      city: filters.city ?? [],
+      page: filters.page,
     },
     resolver: zodResolver(searchValidation),
   });
 
   const [open, setOpen] = useState<string[]>([]);
 
+  const handleSubmit = (data: SearchValidation) => {
+    setFilters(data);
+    window.history.pushState(
+      null,
+      "",
+      "?" +
+        qs.stringify(filterNonNull(data), {
+          arrayFormat: "repeat",
+        }),
+    );
+  };
+
   return (
     <div className="grid gap-4">
       <p className="font-bold">Filter Companies</p>
       <Form {...form}>
-        <form onChange={form.handleSubmit(setFilters)} className="grid gap-2">
+        <form onChange={form.handleSubmit(handleSubmit)} className="grid gap-2">
           <Input placeholder="Search..." {...form.register("search")} />
           <div>
             <Accordion type="multiple" value={open} onValueChange={setOpen}>

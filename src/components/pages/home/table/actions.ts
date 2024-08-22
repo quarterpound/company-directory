@@ -31,7 +31,7 @@ export const getCompanyTable = async (search: SearchValidation) => {
           }
         : undefined,
     industry_on_company:
-      search.services.length !== 0
+      search.industry.length !== 0
         ? {
             some: {
               industry: {

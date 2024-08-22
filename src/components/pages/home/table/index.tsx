@@ -16,7 +16,8 @@ import { SearchValidation } from "../validation";
 import { getCompanyTable } from "./actions";
 import { useAppState } from "@/lib/state";
 import Pagination from "./pagination";
-import { useState } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
+import { PackageX } from "lucide-react";
 
 type CompanyFull = Prisma.companyGetPayload<{
   include: {
@@ -38,16 +39,15 @@ interface TableProps {
 const Table = ({ initialCompanies, initialCount, filters }: TableProps) => {
   const { filters: internalFilters, setFilters } = useAppState();
 
+  const { search, ...finalFilters } = internalFilters ?? filters;
+  const finalSearch = useDebounce(search, 300);
+
   const query = useQuery({
-    queryKey: [
-      "companies",
-      internalFilters ?? filters,
-      (internalFilters ?? filters).page,
-    ],
+    queryKey: ["companies", finalFilters, finalSearch],
     queryFn: () =>
       getCompanyTable({
-        ...(internalFilters ?? filters),
-        page: (internalFilters ?? filters).page,
+        ...finalFilters,
+        search: finalSearch,
       }),
     initialData: () => {
       if (internalFilters) {
@@ -64,6 +64,19 @@ const Table = ({ initialCompanies, initialCount, filters }: TableProps) => {
 
   return (
     <div className="grid gap-5">
+      {query.data?.count === 0 && (
+        <Card className="shadow-xl">
+          <CardHeader>
+            <CardTitle className="flex flex-col items-center justify-center text-center">
+              <PackageX className="h-12 w-12 text-muted-foreground mb-2" />
+              <span>No items found</span>
+            </CardTitle>
+            <CardDescription className="text-center">
+              Try adjusting your filters or search criteria
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
       {query.data?.data.map((item) => (
         <Card className="shadow-xl" key={item.id}>
           <CardHeader>

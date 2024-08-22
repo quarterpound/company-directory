@@ -121,7 +121,6 @@ const main = async () => {
           },
         },
       });
-      console.log(createdCompany);
     } catch (e) {
       continue;
     }
