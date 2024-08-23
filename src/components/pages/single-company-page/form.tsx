@@ -172,6 +172,7 @@ const ClaimForm = ({ data }: ClaimFormProps) => {
                 <Button
                   onClick={() => setOpen(false)}
                   disabled={claimMutation.isPending}
+                  type="button"
                   variant={"outline"}
                 >
                   Cancel

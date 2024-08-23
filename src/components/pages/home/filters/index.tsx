@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppState } from "@/lib/state";
 import qs from "qs";
 import { useRouter } from "next/navigation";
+import { pushParams } from "@/lib/utils";
 
 interface FiltersProps {
   city: city[];
@@ -31,10 +32,6 @@ interface FiltersProps {
   industry: industry[];
   service: service[];
   filters: SearchValidation;
-}
-
-function filterNonNull(obj: any) {
-  return Object.fromEntries(Object.entries(obj).filter(([k, v]) => v));
 }
 
 const Filters = ({
@@ -62,14 +59,7 @@ const Filters = ({
 
   const handleSubmit = (data: SearchValidation) => {
     setFilters(data);
-    window.history.pushState(
-      null,
-      "",
-      "?" +
-        qs.stringify(filterNonNull(data), {
-          arrayFormat: "repeat",
-        }),
-    );
+    pushParams(data);
   };
 
   return (

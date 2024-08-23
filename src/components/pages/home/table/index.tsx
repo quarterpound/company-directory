@@ -18,6 +18,7 @@ import { useAppState } from "@/lib/state";
 import Pagination from "./pagination";
 import { useDebounce } from "@uidotdev/usehooks";
 import { PackageX } from "lucide-react";
+import { pushParams } from "@/lib/utils";
 
 type CompanyFull = Prisma.companyGetPayload<{
   include: {
@@ -109,9 +110,11 @@ const Table = ({ initialCompanies, initialCount, filters }: TableProps) => {
           total={query.data?.count ?? 0}
           limit={10}
           page={(internalFilters ?? filters).page ?? 0}
-          onChange={(page) =>
-            setFilters({ ...(internalFilters ?? filters), page })
-          }
+          onChange={(page) => {
+            const data = { ...(internalFilters ?? filters), page };
+            setFilters(data);
+            pushParams(data);
+          }}
         />
       )}
     </div>
